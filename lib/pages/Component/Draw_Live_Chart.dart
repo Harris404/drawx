@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:drawx/pages/Component/wheel_of_fortune.dart';
 
 class LivePieChart extends StatefulWidget {
   final List<double> data;
@@ -13,6 +14,26 @@ class LivePieChart extends StatefulWidget {
   _LivePieChartState createState() => _LivePieChartState();
 }
 
+class _PointerPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4;
+
+    canvas.drawLine(
+      Offset(size.width / 2, 0),
+      Offset(size.width / 2, size.height-30),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
+}
 
 
 class _LivePieChartState extends State<LivePieChart> {
@@ -21,15 +42,30 @@ class _LivePieChartState extends State<LivePieChart> {
     const Color(0xff3EE094),
     const Color(0xff3398F6),
     const Color(0XffFA4A42),
-    const Color(0xffFE9539)
+    const Color(0xffFE9539),
+    Colors.yellow
   ];
 
   double _rotationAngle = 0;
 
+  Widget _buildPointer() {
+    return Positioned.fill(
+      child: Align(
+        alignment: Alignment.center,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: CustomPaint(
+            size: Size(60, 60),
+            painter: _PointerPainter(),
+          ),
+        ),
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     List<PieChartSectionData> sections =
-        _generateSectionsFromData(widget.data, widget.labels);
+    _generateSectionsFromData(widget.data, widget.labels);
 
     return Stack(
       children: [
@@ -44,6 +80,7 @@ class _LivePieChartState extends State<LivePieChart> {
             sections: sections,
           ),
         ),
+        _buildPointer(), // 添加指针部件
         Positioned(
           top: 0,
           right: 0,
@@ -77,13 +114,14 @@ class _LivePieChartState extends State<LivePieChart> {
         badgeWidget: Text(
           label,
           style:
-              const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         badgePositionPercentageOffset: 0.5,
       );
     });
   }
 }
+
 
 //Draw Live Widget moved here
 class DrawLiveWidget extends StatefulWidget {
@@ -123,7 +161,7 @@ class _DrawLiveWidgetState extends State<DrawLiveWidget> {
           child: SizedBox(
             height: 300,
             width: 300,
-            child: LivePieChart(data: prob, labels: options),
+            child: WheelOfFortune(items: options), // 修改为 WheelOfFortune 小部件
           ),
         ),
         SizedBox(
